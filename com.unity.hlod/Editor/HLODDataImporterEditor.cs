@@ -2,7 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
-using UnityEditor.Experimental.AssetImporters;
+#if UNITY_2020_1_OR_LOWER
+using UnityEditor.Experimental;
+#else
+using UnityEditor.AssetImporters;
+#endif
 using System.IO;
 
 namespace Unity.HLODSystem

@@ -2,10 +2,13 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UnityEditor.Build;
-using UnityEditor.Experimental.AssetImporters;
+#if UNITY_2020_1_OR_LOWER
+using UnityEditor.Experimental;
+#else
+using UnityEditor.AssetImporters;
+#endif
 using UnityEngine;
 using TextureCompressionQuality = UnityEditor.TextureCompressionQuality;
-using UnityEditor.Experimental;
 
 namespace Unity.HLODSystem
 {
@@ -24,7 +27,7 @@ namespace Unity.HLODSystem
                 using (Stream stream = new FileStream(ctx.assetPath, FileMode.Open, FileAccess.Read))
                 {
                     HLODData data = HLODDataSerializer.Read(stream);
-                    RootData rootData = RootData.CreateInstance<RootData>();
+                    RootData rootData = ScriptableObject.CreateInstance<RootData>();
                     TextureFormat compressFormat = GetCompressFormat(data, buildTargetGroup);
 
                     int currentProgress = 0;
@@ -223,7 +226,11 @@ namespace Unity.HLODSystem
         static void UpdateBuildTaget(BuildTarget target)
         {
             var hash = Hash128.Compute(target.ToString());
+#if UNITY_2020_1_OR_LOWER
             AssetDatabaseExperimental.RegisterCustomDependency("HLODSystemPlatform", hash);
+#else
+            AssetDatabase.RegisterCustomDependency("HLODSystemPlatform", hash);
+#endif
         }
         public void OnActiveBuildTargetChanged(BuildTarget previousTarget, BuildTarget newTarget)
         {
